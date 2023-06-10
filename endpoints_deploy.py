@@ -157,7 +157,7 @@ class endpoints_deploy:
                                     "IpProtocol": "tcp",
                                     "FromPort": 5000,
                                     "ToPort": 5000,
-                                    "IpRanges": [{"CidrIp": f"{ip}/32"}],
+                                    "IpRanges": [{"CidrIp": ip_cidr}],
                                 }
                             ],
                         )
@@ -181,18 +181,17 @@ class endpoints_deploy:
             ToPort=ssh_port,
             CidrIp=ip_cidr
         )
-        for ip in self.ip_list:
-            self.ec2.authorize_security_group_ingress(
-                GroupId=group_id,
-                IpPermissions=[
-                    {
-                        "IpProtocol": "tcp",
-                        "FromPort": 5000,
-                        "ToPort": 5000,
-                        "IpRanges": [{"CidrIp": f"{ip}/32"}],
-                    }
-                ],
-            )
+        self.ec2.authorize_security_group_ingress(
+            GroupId=group_id,
+            IpPermissions=[
+                {
+                    "IpProtocol": "tcp",
+                    "FromPort": 5000,
+                    "ToPort": 5000,
+                    "IpRanges": [{"CidrIp": ip_cidr}],
+                }
+            ],
+        )
 
         return group_id
 
