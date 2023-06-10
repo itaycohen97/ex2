@@ -17,7 +17,9 @@ with open("../data.json") as f:
     aws_region = dictt["aws_region"]
     aws_secret_access_key = dictt["aws_secret_access_key"]
     aws_access_key_id = dictt["aws_access_key_id"]
-aws_wrapper = ec2_handler(aws_region, aws_secret_access_key, aws_access_key_id)
+    pem_name = dictt["new_pem_name"]
+    aws_wrapper = ec2_handler(
+        aws_region, aws_secret_access_key, aws_access_key_id, pem_name=pem_name)
 
 result_queue = []
 pending_queue = []

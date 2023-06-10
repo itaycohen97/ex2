@@ -10,13 +10,13 @@ from scp import SCPClient
 
 
 class ec2_handler:
-    def __init__(self, aws_region, aws_secret_access_key, aws_access_key_id, ssh_port=22, ip_cidr='0.0.0.0/0', ip_list=[]) -> None:
+    def __init__(self, aws_region, aws_secret_access_key, aws_access_key_id, ssh_port=22, ip_cidr='0.0.0.0/0', ip_list=[], pem_name="ex2_pem") -> None:
         urllib3.disable_warnings()
         self.lock = threading.Lock()
         self.ip_list = ip_list
         self.code_str = self.get_code_str()
         self.hostnames_str = self.get_hostnames_json()
-        self.pem_file_name = "ex2_pem"
+        self.pem_file_name = pem_name
         self.pem_file_path = "../pem_key.pem"
         self.ec2 = boto3.client("ec2", aws_access_key_id=aws_access_key_id,
                                 aws_secret_access_key=aws_secret_access_key, region_name=aws_region, verify=False)

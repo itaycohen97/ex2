@@ -11,9 +11,10 @@ from scp import SCPClient
 
 
 class endpoints_deploy:
-    def __init__(self, aws_region, aws_secret_access_key, aws_access_key_id, ssh_port=22, ip_cidr='0.0.0.0/0', ip_list=[]) -> None:
+    def __init__(self, aws_region, aws_secret_access_key, aws_access_key_id, ssh_port=22, ip_cidr='0.0.0.0/0', ip_list=[], pem_name="ex2_pem") -> None:
         urllib3.disable_warnings()
         self.pem_file_path = "./pem_key.pem"
+        self.pem_name = pem_name
         self.ip_list = ip_list
         self.endpoints_hostnames = []
         self.ec2 = boto3.client("ec2", aws_access_key_id=aws_access_key_id,
@@ -23,7 +24,7 @@ class endpoints_deploy:
 
     def init_deploymeny(self, num_of_instances=1):
         # Generate a key pair
-        key_pair_name = 'ex2_pem'
+        key_pair_name = self.pem_name
         key_pair = self.ec2.create_key_pair(KeyName=key_pair_name)
 
         # Save the key pair to a file
@@ -127,9 +128,6 @@ class endpoints_deploy:
                 self.exec_cmd(ssh, command="chmod 777 /home/ec2-user/app.log")
                 self.exec_cmd(
                     ssh, command="(cd ex2/server;(nohup python3 server.py >/home/ec2-user/app.log 2>&1)&)")
-                # self.exec_cmd(
-                #     ssh, command="(cd ex2/server; gunicorn -b 0.0.0.0:5000 server:app --log-file=/home/ec2-user/app.log --timeout 180 --daemon)")
-                print(self.exec_cmd(ssh, command="curl 127.0.0.1:5000/"))
                 print("Done!")
 
             except paramiko.AuthenticationException:
@@ -227,11 +225,12 @@ if __name__ == "__main__":
     with open("data.json") as f:
         dictt = json.loads(f.read())
         aws_region = dictt["aws_region"]
+        new_pem_name = dictt["new_pem_name"]
         aws_secret_access_key = dictt["aws_secret_access_key"]
         aws_access_key_id = dictt["aws_access_key_id"]
     ip_list = [endpoints_deploy.get_my_ip()]
     tmp = endpoints_deploy(aws_region,
-                           aws_secret_access_key, aws_access_key_id, ip_list=ip_list)
+                           aws_secret_access_key, aws_access_key_id, ip_list=ip_list, pem_name=new_pem_name)
     tmp.init_deploymeny(2)
     print("Deployment is DONE! so what now?")
     print("This is how you communicate with the server:")
