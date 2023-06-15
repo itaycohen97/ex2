@@ -94,7 +94,7 @@ def count(event):
                 logging.info("No workers, adding a new one")
                 current_workers += 1
                 aws_wrapper.add_ec2()
-            elif len(pending_queue) > 0 and (datetime.datetime.now() - pending_queue[-1].start_time).seconds > 10:
+            elif len(pending_queue) > 0 and (datetime.datetime.now() - pending_queue[-1].start_time).seconds > 10 and current_workers < max_workers:
                 current_workers += 1
                 logging.info("adding a worker -> this is worker %d out of %d" %
                              (current_workers, max_workers))
